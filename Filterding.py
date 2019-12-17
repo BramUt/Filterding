@@ -13,8 +13,8 @@ class MainGUI:
         window.title("Filterding")
         window.geometry("700x400")
 
-        reads = StringVar()
-        reads.set("5")
+        reads = IntVar()
+        reads.set(5)
         var_reads = IntVar()
         var_reads.set(5)
         perc_var = IntVar()
@@ -41,8 +41,6 @@ class MainGUI:
                                     font=("Arial", 12))
         label_perc_var.grid(column=0, row=4, sticky=W)
         selector_perc_var.grid(column=0, row=5, sticky=W)
-
-
 
         exit_button = Button(window, text="Exit",
                              command=lambda: window.quit())
