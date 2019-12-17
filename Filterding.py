@@ -29,6 +29,13 @@ def file_opener():
 
 
 def file_reader():
+    """Reads a tsv file and returns the candidate genes based on some
+    parameters.
+
+    Output: candidates - list, nested list with candidate genes
+            header_line - list, list containing the contents of the first row
+                          of the tsv.
+    """
     candidates = []
 
     with open(file_opener()) as file:
@@ -44,6 +51,7 @@ def file_reader():
                 snp_i = header_line.index("SNP id")
                 synonymous_i = header_line.index("Synonymous")
                 gen_comp_i = header_line.index("Gene component")
+                omim_dis_i = header_line.index("OMIM_DISEASE")
                 print(reads_i, phylop_i, var_reads_i, perc_var_i, snp_i,
                       synonymous_i, gen_comp_i)
             else:
@@ -54,16 +62,13 @@ def file_reader():
                             int(line[reads_i]) >= 5 and
                             line[snp_i] == "" and
                             int(line[var_reads_i]) >= 5 and
-                            int(line[perc_var_i]) >= 20 and
+                            float(line[perc_var_i]) >= 20 and
                             line[synonymous_i] == "FALSE" and
-                            line[gen_comp_i] in ("EXON_REGION", "SA_SITE")
-                    ):
-                        # print(line)
+                            line[gen_comp_i] in ("EXON_REGION", "SA_SITE") and
+                            "Retinitis" in line[omim_dis_i]):
                         candidates.append(line)
                 except IndexError:
                     print(line)
-            if counter == 1:
-                print(line)
 
     return candidates, header_line
 
