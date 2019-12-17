@@ -8,16 +8,45 @@ root.withdraw()
 class MainGUI:
 
     def __init__(self):
-        file = filedialog.askopenfilename(title="Select a file.",
-                                          initialdir=".")
 
         window = Tk()
         window.title("Filterding")
         window.geometry("700x400")
 
+        reads = StringVar()
+        reads.set("5")
+        var_reads = IntVar()
+        var_reads.set(5)
+        perc_var = IntVar()
+        perc_var.set(20)
+
+        label_reads = Label(window, text="Minimum reads", font=("Arial", 12))
+        selector_reads = Spinbox(window, from_=0, to=100, width=5,
+                                 textvariable=reads, font=("Arial", 12))
+        label_reads.grid(column=0, row=0, sticky=W)
+        selector_reads.grid(column=0, row=1, sticky=W)
+
+        label_var_reads = Label(window, text="Minimum variation reads",
+                                font=("Arial", 12))
+        selector_var_reads = Spinbox(window, from_=0, to=200, width=5,
+                                     textvariable=var_reads,
+                                     font=("Arial", 12))
+        label_var_reads.grid(column=0, row=2, sticky=W)
+        selector_var_reads.grid(column=0, row=3, sticky=W)
+
+        label_perc_var = Label(window, text="Minimal % variation",
+                               font=("Arial", 12))
+        selector_perc_var = Spinbox(window, from_=0, to=200, width=5,
+                                    textvariable=perc_var,
+                                    font=("Arial", 12))
+        label_perc_var.grid(column=0, row=4, sticky=W)
+        selector_perc_var.grid(column=0, row=5, sticky=W)
+
+
+
         exit_button = Button(window, text="Exit",
                              command=lambda: window.quit())
-        exit_button.grid(column=0, row=0)
+        exit_button.grid(column=0, row=10, sticky=E)
 
         window.mainloop()
 
@@ -91,11 +120,11 @@ def filter_func():
 
 
 def main():
-    # gui = MainGUI()
+    gui = MainGUI()
 
-    candidates, header_line = file_reader()
-
-    file_writer(candidates, header_line)
+    # candidates, header_line = file_reader()
+    #
+    # file_writer(candidates, header_line)
 
 
 main()
