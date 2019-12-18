@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import filedialog
+from tkinter import ttk
 
 root = Tk()
 root.withdraw()
@@ -9,36 +10,53 @@ class MainGUI:
 
     def __init__(self):
 
-        window = Toplevel()
-        window.title("Filterding")
-        window.geometry("700x400")
+        self.window = Toplevel()
+        self.window.title("Filterding")
 
-        reads = IntVar()
+        reads, var_reads, perc_var = IntVar(), IntVar(), IntVar()
         reads.set(5)
-        var_reads = IntVar()
         var_reads.set(5)
-        perc_var = IntVar()
         perc_var.set(20)
-        print(reads.get())
 
-        self.label_reads = GUILabel(window, "Minimum reads", 0,0)
-        self.selector_reads = GUISpinbox(window, 0, 100, 5, reads, 0, 1)
+        syn_var, omim_var, cause_var = StringVar(), StringVar(), StringVar()
+        syn_var.set("False")
+        omim_var.set("Retinitis")
+        cause_var.set("HGMD")
+        gen_comp_def_var = ["EXON_REGION", "SA_SITE"]
+        gen_comp_dif_var = ["(empty)", "INTRON_REGION", "microRNA",
+                            "SA_SITE_CANONICAL", "UTR"]
 
-        self.label_var_reads = GUILabel(window, "Minimum variation reads", 0, 2)
-        self.selector_var_reads = GUISpinbox(window, 0, 200, 5, var_reads, 0,
-                                             3)
+        self.label_reads = GUILabel(self.window, "Minimum reads", 0, 0)
+        self.selector_reads = GUISpinbox(self.window, 0, 100, 5, reads, 0, 1)
 
-        self.label_perc_var = GUILabel(window, "Minimal % variation", 0, 4)
-        self.selector_perc_var = GUISpinbox(window, 0, 200, 5, perc_var, 0, 5)
+        self.label_var_reads = GUILabel(self.window, "Minimum variation reads",
+                                        0, 2)
+        self.selector_var_reads = GUISpinbox(self.window, 0, 200, 5, var_reads,
+                                             0, 3)
 
+        self.label_perc_var = GUILabel(self.window, "Minimal % variation",
+                                       0, 4)
+        self.selector_perc_var = GUISpinbox(self.window, 0, 200, 5,
+                                            perc_var, 0, 5)
 
-        self.testlabel = GUILabel(window, "test", 0, 6)
+        self.label_syn = GUILabel(self.window, "Synonymous", 0, 6)
+        self.selector_syn = GUICombobox(self.window, ["False", "True"],
+                                        syn_var, 0, 7)
 
-        exit_button = Button(window, text="Exit",
-                             command=lambda: window.quit())
-        exit_button.grid(column=0, row=10, sticky=E)
+        self.label_omim = GUILabel(self.window, "OMIM Disease", 0, 8)
+        self.selector_omim = GUIEntry(self.window, omim_var, 0, 9)
+        self.testlabel = GUILabel(self.window, "test", 0, 20)
 
-        window.mainloop()
+        self.label_cause = GUILabel(self.window, "Causative projects", 0, 10)
+        self.selector_cause = GUIEntry(self.window, cause_var, 0, 11)
+
+        self.label_gen_comp = GUILabel(self.window, "Gene component", 0, 12)
+        # self.selector_
+        exit_button = Button(self.window, text="Exit",
+                             command=lambda: self.window.quit())
+        exit_button.grid(column=0, row=20, sticky=E)
+
+        self.window.mainloop()
 
 
 class GUILabel:
@@ -54,6 +72,29 @@ class GUISpinbox:
         self.props = Spinbox(window, from_=from_, to=to, width=width,
                              textvariable=text, font=("Arial", 12)
                              ).grid(column=column, row=row, sticky=sticky)
+
+
+class GUICombobox:
+
+    def __init__(self, window, values, default, column, row, sticky=W):
+        self.props = ttk.Combobox(window, values=values, textvariable=default
+                                  ).grid(column=column, row=row, sticky=sticky)
+
+
+class GUIEntry:
+    def __init__(self, window, default, column, row, sticky=W):
+        self.props = Entry(window, textvariable=default
+                           ).grid(column=column, row=row, sticky=sticky)
+
+
+class GUICheckbox:
+    def __init__(self, window, default, non_default, row):
+        self.options = []
+        column = 0
+        for op in default:
+            var = IntVar()
+            # check = C
+
 
 
 def file_opener():
