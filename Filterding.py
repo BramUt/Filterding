@@ -9,7 +9,7 @@ class MainGUI:
 
     def __init__(self):
 
-        window = Tk()
+        window = Toplevel()
         window.title("Filterding")
         window.geometry("700x400")
 
@@ -19,6 +19,7 @@ class MainGUI:
         var_reads.set(5)
         perc_var = IntVar()
         perc_var.set(20)
+        print(reads.get())
 
         label_reads = Label(window, text="Minimum reads", font=("Arial", 12))
         selector_reads = Spinbox(window, from_=0, to=100, width=5,
@@ -92,7 +93,8 @@ def file_reader():
                             float(line[perc_var_i]) >= 20 and
                             line[synonymous_i] == "FALSE" and
                             line[gen_comp_i] in ("EXON_REGION", "SA_SITE") and
-                            "Retinitis" in line[omim_dis_i]):
+                            "Retinitis" in line[omim_dis_i]
+                    ):
                         candidates.append(line)
                 except IndexError:
                     print(line)
@@ -107,6 +109,7 @@ def file_writer(candidates, header_line):
             with open("Filterding results.tsv", "w") as file:
                 file.write("\t".join(header_line) + "\n")
                 for c in candidates:
+                    print(c)
                     file.write("\t".join(c) + "\n")
                 break
         except PermissionError:
@@ -118,11 +121,11 @@ def filter_func():
 
 
 def main():
-    gui = MainGUI()
+    # gui = MainGUI()
 
-    # candidates, header_line = file_reader()
-    #
-    # file_writer(candidates, header_line)
+    candidates, header_line = file_reader()
+
+    file_writer(candidates, header_line)
 
 
 main()
