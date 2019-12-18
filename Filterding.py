@@ -60,6 +60,8 @@ class MainGUI:
 
         self.window.mainloop()
 
+        print(self.selector_gen_comp.get_gen_comp())
+
 
 class GUILabel:
 
@@ -91,19 +93,30 @@ class GUIEntry:
 
 class GUICheckbox:
     def __init__(self, window, default, non_default, column, row):
+        self.default = default
+        self.non_default = non_default
         self.options = []
-        for o in default:
-            var = IntVar(value=1)
-            # var.set(1)
-            check = Checkbutton(window, text=o, variable=var)
-            check.select()
+        for o in range(len(self.default)):
+            temp_text = default[o]
+            self.default[o] = IntVar()
+            self.default[o].set(1)
+            self.check = Checkbutton(window, text=temp_text,
+                                     variable=self.default[o])
+            self.check.select()
+            self.check.grid(column=column, row=row, sticky=W)
+            row += 1
+        for p in range(len(self.non_default)):
+            temp_text = self.non_default[p]
+            self.non_default[p] = IntVar()
+            check = Checkbutton(window, text=temp_text,
+                                variable=self.non_default[p])
             check.grid(column=column, row=row, sticky=W)
             row += 1
-        for p in non_default:
-            var = IntVar()
-            check = Checkbutton(window, text=p, variable=var)
-            check.grid(column=column, row=row, sticky=W)
-            row += 1
+
+    def get_gen_comp(self):
+        return [self.default[o].get() for o in (range(len(self.default)))] + \
+               [self.non_default[p].get() for p in
+                (range(len(self.non_default)))]
 
 
 def file_opener():
