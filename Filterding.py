@@ -51,7 +51,9 @@ class MainGUI:
         self.selector_cause = GUIEntry(self.window, cause_var, 0, 11)
 
         self.label_gen_comp = GUILabel(self.window, "Gene component", 0, 12)
-        # self.selector_
+        self.selector_gen_comp = GUICheckbox(self.window, gen_comp_def_var,
+                                             gen_comp_dif_var, 0, 13)
+
         exit_button = Button(self.window, text="Exit",
                              command=lambda: self.window.quit())
         exit_button.grid(column=0, row=20, sticky=E)
@@ -88,13 +90,20 @@ class GUIEntry:
 
 
 class GUICheckbox:
-    def __init__(self, window, default, non_default, row):
+    def __init__(self, window, default, non_default, column, row):
         self.options = []
-        column = 0
-        for op in default:
+        for o in default:
+            var = IntVar(value=1)
+            # var.set(1)
+            check = Checkbutton(window, text=o, variable=var)
+            check.select()
+            check.grid(column=column, row=row, sticky=W)
+            row += 1
+        for p in non_default:
             var = IntVar()
-            # check = C
-
+            check = Checkbutton(window, text=p, variable=var)
+            check.grid(column=column, row=row, sticky=W)
+            row += 1
 
 
 def file_opener():
