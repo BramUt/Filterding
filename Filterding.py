@@ -9,7 +9,6 @@ root.withdraw()
 class MainGUI:
 
     def __init__(self):
-
         self.window = Toplevel()
         self.window.title("Filterding")
 
@@ -45,7 +44,6 @@ class MainGUI:
 
         self.label_omim = GUILabel(self.window, "OMIM Disease", 0, 8)
         self.selector_omim = GUIEntry(self.window, omim_var, 0, 9)
-        self.testlabel = GUILabel(self.window, "test", 0, 20)
 
         self.label_cause = GUILabel(self.window, "Causative projects", 0, 10)
         self.selector_cause = GUIEntry(self.window, cause_var, 0, 11)
@@ -60,35 +58,50 @@ class MainGUI:
 
         self.window.mainloop()
 
-        print(self.selector_gen_comp.get_gen_comp())
+        print(self.selector_gen_comp.get_gen_comp(),
+              self.selector_reads.get_value(),
+              self.selector_var_reads.get_value(),
+              self.selector_perc_var.get_value(),
+              self.selector_syn.get_value(),
+              self.selector_omim.get_value(),
+              self.selector_cause.get_value())
 
 
 class GUILabel:
 
     def __init__(self, window, text, column, row, sticky=W):
-        self.props = Label(window, text=text, font=("Arial", 12)
-                           ).grid(column=column, row=row, sticky=sticky)
+        self.props = Label(window, text=text, font=("Arial", 12))
+        self.props.grid(column=column, row=row, sticky=sticky)
 
 
 class GUISpinbox:
 
     def __init__(self, window, from_, to, width, text, column, row, sticky=W):
         self.props = Spinbox(window, from_=from_, to=to, width=width,
-                             textvariable=text, font=("Arial", 12)
-                             ).grid(column=column, row=row, sticky=sticky)
+                             textvariable=text, font=("Arial", 12))
+        self.props.grid(column=column, row=row, sticky=sticky)
+
+    def get_value(self):
+        return self.props.get()
 
 
 class GUICombobox:
 
     def __init__(self, window, values, default, column, row, sticky=W):
-        self.props = ttk.Combobox(window, values=values, textvariable=default
-                                  ).grid(column=column, row=row, sticky=sticky)
+        self.props = ttk.Combobox(window, values=values, textvariable=default)
+        self.props.grid(column=column, row=row, sticky=sticky)
+
+    def get_value(self):
+        return self.props.get()
 
 
 class GUIEntry:
     def __init__(self, window, default, column, row, sticky=W):
-        self.props = Entry(window, textvariable=default
-                           ).grid(column=column, row=row, sticky=sticky)
+        self.props = Entry(window, textvariable=default)
+        self.props.grid(column=column, row=row, sticky=sticky)
+
+    def get_value(self):
+        return self.props.get()
 
 
 class GUICheckbox:
@@ -156,15 +169,18 @@ def file_reader():
                 try:
                     line = line.rstrip().split("\t")
                     if (
-                            float(line[phylop_i]) >= 2.5 and
+                            # float(line[phylop_i]) >= 2.5 and
                             int(line[reads_i]) >= 5 and
                             line[snp_i] == "" and
                             int(line[var_reads_i]) >= 5 and
                             float(line[perc_var_i]) >= 20 and
                             line[synonymous_i] == "FALSE" and
                             line[gen_comp_i] in ("EXON_REGION", "SA_SITE") and
-                            "Retinitis" in line[omim_dis_i]
-                    ) or "HGMD" in line[caus_pro_i]:
+                            ("Retinitis" in line[omim_dis_i])
+                    ) or ("HGMD" in line[caus_pro_i] and
+                          ("Retinitis" in line[omim_dis_i])
+                          ):
+                        print(line[phylop_i])
                         candidates.append(line)
                 except IndexError:
                     print(line)
@@ -173,7 +189,6 @@ def file_reader():
 
 
 def file_writer(candidates, header_line):
-
     while True:
         try:
             with open("Filterding results.tsv", "w") as file:
@@ -192,9 +207,9 @@ def filter_func():
 def main():
     gui = MainGUI()
 
-    # candidates, header_line = file_reader()
-    #
-    # file_writer(candidates, header_line)
+    candidates, header_line = file_reader()
+
+    file_writer(candidates, header_line)
 
 
 main()
