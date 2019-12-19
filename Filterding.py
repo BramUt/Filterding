@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
+import re
+
 
 root = Tk()
 root.withdraw()
@@ -148,17 +150,20 @@ def file_opener():
 def filter_func(condition_list, data_list):
     """"""
 
-    if (data_list[0] >= condition_list[0] and   # reads
-        data_list[1] >= condition_list[1] and   # variation reads
+    if (int(data_list[0]) >= condition_list[0] and   # reads
+        int(data_list[1]) >= condition_list[1] and   # variation reads
         # data_list[2] >= condition_list[2] and   # PhyloP
-        data_list[3] >= condition_list[3] and   # Percent variation
+        float(data_list[3]) >= condition_list[3] and   # Percent variation
         data_list[4] == condition_list[4] and   # Synonymous
         data_list[5] in condition_list[5] and   # Gene component
         set(data_list[6]).intersection(condition_list[6]) and   # OMIM disease
         data_list[7] == ""   # SNP id
-        ):
+    ):
+        print("wel:", data_list)
         return True
-
+    else:
+        # print("niet:", data_list)
+        pass
 
 def file_reader(condition_list):
     """Reads a tsv file and returns the candidate genes based on some
@@ -185,13 +190,19 @@ def file_reader(condition_list):
                 gen_comp_i = header_line.index("Gene component")
                 omim_dis_i = header_line.index("OMIM_DISEASE")
                 caus_pro_i = header_line.index("Causative - Projects")
-                data_list = [reads_i, phylop_i, var_reads_i, perc_var_i, snp_i,
-                             synonymous_i, gen_comp_i, omim_dis_i, caus_pro_i]
-            else:
-                print(condition_list)
-                print(data_list)
+                index_list = [reads_i, phylop_i, var_reads_i, perc_var_i,
+                              snp_i, synonymous_i, gen_comp_i, omim_dis_i,
+                              caus_pro_i]
+                print(index_list)
+            elif line != "":
+                data_list = [line[reads_i], line[var_reads_i], line[phylop_i],
+                             line[perc_var_i], line[synonymous_i],
+                             line[gen_comp_i], line[omim_dis_i], line[snp_i]]
+                # print(condition_list)
+                # print(data_list)
                 try:
-                    line = line.rstrip().split("\t")
+                    line = line.rstrip()
+                    line = re.split(r"\t+", line)
                     if (filter_func(condition_list, data_list)
                             # # float(line[phylop_i]) >= 2.5 and
                             # int(line[reads_i]) >= 5 and
@@ -204,10 +215,16 @@ def file_reader(condition_list):
                     ) or ("HGMD" in line[caus_pro_i] and
                           (set(data_list[6]).intersection(condition_list[6]))
                           ):
-                        print(line[phylop_i])
+                        print(line)
                         candidates.append(line)
                 except IndexError:
                     print(line)
+                except ValueError:
+                    line = re.split(r"\t+", line)
+                    print(counter, line)
+                    quit()
+            else:
+                break
 
     return candidates, header_line
 
