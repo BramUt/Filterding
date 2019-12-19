@@ -101,7 +101,7 @@ class GUIEntry:
         self.props.grid(column=column, row=row, sticky=sticky)
 
     def get_value(self):
-        return self.props.get()
+        return self.props.get().split(",")
 
 
 class GUICheckbox:
@@ -207,9 +207,9 @@ def filter_func():
 def main():
     gui = MainGUI()
 
-    candidates, header_line = file_reader()
-
-    file_writer(candidates, header_line)
+    # candidates, header_line = file_reader()
+    #
+    # file_writer(candidates, header_line)
 
 
 main()
