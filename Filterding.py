@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
+from tkinter.ttk import *
 import re
 import traceback
 
@@ -116,35 +117,37 @@ class GUIEntry:
 
 class GUICheckbox:
     def __init__(self, window, default, non_default, column, row):
-        self.default = default
         self.def_tag = default
+        self.default = default
         self.non_def_tags = non_default
         self.non_default = non_default
         self.options = []
+
         for o in range(len(self.default)):
             temp_text = default[o]
-            self.default[o] = IntVar()
-            self.default[o].set(1)
+            self.default[o] = StringVar()
+            self.default[o].set(temp_text)
             self.check = Checkbutton(window, text=temp_text,
-                                     variable=self.default[o])
-            self.check.select()
+                                     variable=self.default[o],
+                                     onvalue=temp_text, offvalue=0)
             self.check.grid(column=column, row=row, sticky=W)
             row += 1
         for p in range(len(self.non_default)):
             temp_text = self.non_default[p]
-            self.non_default[p] = IntVar()
+            self.non_default[p] = StringVar()
             check = Checkbutton(window, text=temp_text,
-                                variable=self.non_default[p])
+                                variable=self.non_default[p],
+                                onvalue=temp_text, offvalue=0)
             check.grid(column=column, row=row, sticky=W)
             row += 1
 
+
     def get_gen_comp(self):
 
-        # for tag in
-
-        return [self.default[o].get() for o in (range(len(self.default)))] + \
+        return [self.default[o].get() for o in (range(len(self.default)))
+                if self.default[o].get()] + \
                [self.non_default[p].get() for p in
-                (range(len(self.non_default)))]
+                (range(len(self.non_default))) if self.non_default[p].get()]
 
 
 def file_opener():
@@ -161,11 +164,11 @@ def filter_func(condition_list, data_list):
             int(data_list[1]) >= condition_list[1] and   # variation reads
             # data_list[2] >= condition_list[2] and   # PhyloP
             float(data_list[3]) >= condition_list[3] and   # Percent variation
-            data_list[4] == condition_list[4] and   # Synonymous
-            data_list[5] in condition_list[5] and   # Gene component
-            set(data_list[6]).intersection(condition_list[6]) and   # OMIM disease
-            data_list[7] == ""   # SNP id
-        ):
+            data_list[4] == condition_list[4] and          # Synonymous
+            any([gen in data_list[5] for gen in condition_list[5]]) and # Gene component
+            any([dis in data_list[6] for dis in condition_list[6]]) and # OMIM disease
+            data_list[7] == ""
+        ):   # SNP id
             print("wel:", data_list)
             return True
         else:
@@ -218,24 +221,19 @@ def file_reader(condition_list):
                                  line_list[gen_comp_i],
                                  line_list[omim_dis_i],
                                  line_list[snp_i]]
-                    # print(condition_list)
-                    # print(data_list)
-                    print(set(data_list[6]))
+                    if counter == 1:
+                        print(data_list, condition_list)
 
-                    # if (filter_func(condition_list, data_list)
-                    if(
-                            # float(line[phylop_i]) >= 2.5 and
-                            int(line_list[reads_i]) >= 5 and
-                            line_list[snp_i] == "" and
-                            int(line_list[var_reads_i]) >= 5 and
-                            float(line_list[perc_var_i]) >= 20 and
-                            line_list[synonymous_i] == "FALSE" and
-                            line_list[gen_comp_i] in ("EXON_REGION", "SA_SITE") and
-                            ("Retinitis" in line_list[omim_dis_i])
-                    ) or ("HGMD" in line_list[caus_pro_i] and
-                          ("Retinitis" in data_list[6])
+                    if (filter_func(condition_list, data_list)
+
                     ):
-                        print(line_list)
+                        print("Geen SNP", data_list)
+                        candidates.append(line_list)
+                    elif ("HGMD" in line_list[caus_pro_i] and
+                          (any([dis in data_list[6] for dis in
+                                condition_list[6]]))
+                    ):
+                        print("SNP", data_list)
                         candidates.append(line_list)
                 # except ValueError as error:
                 #     traceback.print_exc()
