@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
 import re
+import traceback
 
 
 root = Tk()
@@ -116,6 +117,8 @@ class GUIEntry:
 class GUICheckbox:
     def __init__(self, window, default, non_default, column, row):
         self.default = default
+        self.def_tag = default
+        self.non_def_tags = non_default
         self.non_default = non_default
         self.options = []
         for o in range(len(self.default)):
@@ -136,6 +139,9 @@ class GUICheckbox:
             row += 1
 
     def get_gen_comp(self):
+
+        # for tag in
+
         return [self.default[o].get() for o in (range(len(self.default)))] + \
                [self.non_default[p].get() for p in
                 (range(len(self.non_default)))]
@@ -150,20 +156,26 @@ def file_opener():
 def filter_func(condition_list, data_list):
     """"""
 
-    if (int(data_list[0]) >= condition_list[0] and   # reads
-        int(data_list[1]) >= condition_list[1] and   # variation reads
-        # data_list[2] >= condition_list[2] and   # PhyloP
-        float(data_list[3]) >= condition_list[3] and   # Percent variation
-        data_list[4] == condition_list[4] and   # Synonymous
-        data_list[5] in condition_list[5] and   # Gene component
-        set(data_list[6]).intersection(condition_list[6]) and   # OMIM disease
-        data_list[7] == ""   # SNP id
-    ):
-        print("wel:", data_list)
-        return True
-    else:
-        # print("niet:", data_list)
-        pass
+    try:
+        if (int(data_list[0]) >= condition_list[0] and   # reads
+            int(data_list[1]) >= condition_list[1] and   # variation reads
+            # data_list[2] >= condition_list[2] and   # PhyloP
+            float(data_list[3]) >= condition_list[3] and   # Percent variation
+            data_list[4] == condition_list[4] and   # Synonymous
+            data_list[5] in condition_list[5] and   # Gene component
+            set(data_list[6]).intersection(condition_list[6]) and   # OMIM disease
+            data_list[7] == ""   # SNP id
+        ):
+            print("wel:", data_list)
+            return True
+        else:
+            # print("niet:", data_list)
+            return False
+    except IndexError:
+
+        # print(len(data_list), data_list)
+        return False
+
 
 def file_reader(condition_list):
     """Reads a tsv file and returns the candidate genes based on some
@@ -174,6 +186,7 @@ def file_reader(condition_list):
                           of the tsv.
     """
     candidates = []
+    error_count = 0
 
     with open(file_opener()) as file:
         for counter, line in enumerate(file):
@@ -195,36 +208,53 @@ def file_reader(condition_list):
                               caus_pro_i]
                 print(index_list)
             elif line != "":
-                data_list = [line[reads_i], line[var_reads_i], line[phylop_i],
-                             line[perc_var_i], line[synonymous_i],
-                             line[gen_comp_i], line[omim_dis_i], line[snp_i]]
-                # print(condition_list)
-                # print(data_list)
                 try:
                     line = line.rstrip()
-                    line = re.split(r"\t+", line)
-                    if (filter_func(condition_list, data_list)
-                            # # float(line[phylop_i]) >= 2.5 and
-                            # int(line[reads_i]) >= 5 and
-                            # line[snp_i] == "" and
-                            # int(line[var_reads_i]) >= 5 and
-                            # float(line[perc_var_i]) >= 20 and
-                            # line[synonymous_i] == "FALSE" and
-                            # line[gen_comp_i] in ("EXON_REGION", "SA_SITE") and
-                            # ("Retinitis" in line[omim_dis_i])
-                    ) or ("HGMD" in line[caus_pro_i] and
-                          (set(data_list[6]).intersection(condition_list[6]))
-                          ):
-                        print(line)
-                        candidates.append(line)
+                    line_list = line.split("\t")
+                    # line_list = re.split(r"\t+", line)
+                    data_list = [line_list[reads_i], line_list[var_reads_i],
+                                 line_list[phylop_i], line_list[perc_var_i],
+                                 line_list[synonymous_i],
+                                 line_list[gen_comp_i],
+                                 line_list[omim_dis_i],
+                                 line_list[snp_i]]
+                    # print(condition_list)
+                    # print(data_list)
+                    print(set(data_list[6]))
+
+                    # if (filter_func(condition_list, data_list)
+                    if(
+                            # float(line[phylop_i]) >= 2.5 and
+                            int(line_list[reads_i]) >= 5 and
+                            line_list[snp_i] == "" and
+                            int(line_list[var_reads_i]) >= 5 and
+                            float(line_list[perc_var_i]) >= 20 and
+                            line_list[synonymous_i] == "FALSE" and
+                            line_list[gen_comp_i] in ("EXON_REGION", "SA_SITE") and
+                            ("Retinitis" in line_list[omim_dis_i])
+                    ) or ("HGMD" in line_list[caus_pro_i] and
+                          ("Retinitis" in data_list[6])
+                    ):
+                        print(line_list)
+                        candidates.append(line_list)
+                # except ValueError as error:
+                #     traceback.print_exc()
+                #     print(counter)
+                #     print(line_list)
+                #     print(error)
+                #     # print(data_list)
+                #     print(condition_list)
+                #     #     print(line)
+                #     #     print(counter, line)
+                #     quit()
                 except IndexError:
-                    print(line)
-                except ValueError:
-                    line = re.split(r"\t+", line)
-                    print(counter, line)
-                    quit()
+                    error_count += 1
+                    pass
+
             else:
                 break
+
+    print(error_count)
 
     return candidates, header_line
 
