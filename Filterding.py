@@ -224,9 +224,7 @@ def file_reader(condition_list):
                     if counter == 1:
                         print(data_list, condition_list)
 
-                    if (filter_func(condition_list, data_list)
-
-                    ):
+                    if filter_func(condition_list, data_list) == True:
                         print("Geen SNP", data_list)
                         candidates.append(line_list)
                     elif ("HGMD" in line_list[caus_pro_i] and
