@@ -132,7 +132,6 @@ class GUICheckbox:
             check.grid(column=column, row=row, sticky=W)
             row += 1
 
-
     def get_gen_comp(self):
 
         return [self.default[o].get() for o in (range(len(self.default)))
