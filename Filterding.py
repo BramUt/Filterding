@@ -22,7 +22,7 @@ class MainGUI:
         perc_var.set(20)
 
         syn_var, omim_var, cause_var = StringVar(), StringVar(), StringVar()
-        syn_var.set("False")
+        syn_var.set("FALSE")
         omim_var.set("Retinitis")
         cause_var.set("HGMD")
         gen_comp_def_var = ["EXON_REGION", "SA_SITE"]
@@ -43,7 +43,7 @@ class MainGUI:
                                             perc_var, 0, 5)
 
         self.label_syn = GUILabel(self.window, "Synonymous", 0, 6)
-        self.selector_syn = GUICombobox(self.window, ["False", "True"],
+        self.selector_syn = GUICombobox(self.window, ["FALSE", "TRUE"],
                                         syn_var, 0, 7)
 
         self.label_omim = GUILabel(self.window, "OMIM Disease", 0, 8)
@@ -157,27 +157,33 @@ def file_opener():
 
 
 def filter_func(condition_list, data_list):
-    """"""
+    """Checks if the data in data_list meets the conditions in condition list.
+
+    Input:  condition_list - list, list with conditions.
+            data_list - list, list with data.
+
+    Output: boolean"""
 
     try:
-        if (int(data_list[0]) >= condition_list[0] and   # reads
-            int(data_list[1]) >= condition_list[1] and   # variation reads
-            # data_list[2] >= condition_list[2] and   # PhyloP
-            float(data_list[3]) >= condition_list[3] and   # Percent variation
-            data_list[4] == condition_list[4] and          # Synonymous
-            any([gen in data_list[5] for gen in condition_list[5]]) and # Gene component
-            any([dis in data_list[6] for dis in condition_list[6]]) and # OMIM disease
-            data_list[7] == ""
-        ):   # SNP id
-            print("wel:", data_list)
+        if (int(data_list[0]) >= condition_list[0] and                      # reads
+            int(data_list[1]) >= condition_list[1] and                      # variation reads
+            # data_list[2] >= condition_list[2] and                           # PhyloP
+            float(data_list[3]) >= condition_list[3] and                    # Percent variation
+            data_list[4] == condition_list[4] and                           # Synonymous
+            any([gen in data_list[5] for gen in condition_list[5]]) and     # Gene component
+            any([dis in data_list[6] for dis in condition_list[6]]) and     # OMIM disease
+            data_list[7] == ""                                              # SNP id
+        ):
+
             return True
         else:
-            # print("niet:", data_list)
+
             return False
     except IndexError:
+        pass
 
         # print(len(data_list), data_list)
-        return False
+        # return False
 
 
 def file_reader(condition_list):
@@ -224,7 +230,7 @@ def file_reader(condition_list):
                     if counter == 1:
                         print(data_list, condition_list)
 
-                    if filter_func(condition_list, data_list) == True:
+                    if filter_func(condition_list, data_list):
                         print("Geen SNP", data_list)
                         candidates.append(line_list)
                     elif ("HGMD" in line_list[caus_pro_i] and
@@ -256,6 +262,8 @@ def file_reader(condition_list):
 
 
 def file_writer(candidates, header_line):
+
+    print("Aantal regels:", len(candidates))
     while True:
         try:
             with open("Filterding results.tsv", "w") as file:
