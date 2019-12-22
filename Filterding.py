@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
 from tkinter.ttk import *
-import re
 import traceback
 
 
@@ -61,14 +60,6 @@ class MainGUI:
         exit_button.grid(column=0, row=20, sticky=E)
 
         self.window.mainloop()
-
-        # print(self.selector_gen_comp.get_gen_comp(),
-        #       self.selector_reads.get_value(),
-        #       self.selector_var_reads.get_value(),
-        #       self.selector_perc_var.get_value(),
-        #       self.selector_syn.get_value(),
-        #       self.selector_omim.get_value(),
-        #       self.selector_cause.get_value())
 
         self.condition_list = [self.selector_reads.get_value(),
                                self.selector_var_reads.get_value(),
@@ -162,28 +153,22 @@ def filter_func(condition_list, data_list):
     Input:  condition_list - list, list with conditions.
             data_list - list, list with data.
 
-    Output: boolean"""
+    Output: boolean
+    """
 
-    try:
-        if (int(data_list[0]) >= condition_list[0] and                      # reads
-            int(data_list[1]) >= condition_list[1] and                      # variation reads
-            # data_list[2] >= condition_list[2] and                           # PhyloP
-            float(data_list[3]) >= condition_list[3] and                    # Percent variation
-            data_list[4] == condition_list[4] and                           # Synonymous
-            any([gen in data_list[5] for gen in condition_list[5]]) and     # Gene component
-            any([dis in data_list[6] for dis in condition_list[6]]) and     # OMIM disease
-            data_list[7] == ""                                              # SNP id
-        ):
+    if (int(data_list[0]) >= condition_list[0] and                      # reads
+        int(data_list[1]) >= condition_list[1] and                      # variation reads
+        # data_list[2] >= condition_list[2] and                    # PhyloP
+        float(data_list[3]) >= condition_list[3] and                    # Percent variation
+        data_list[4] == condition_list[4] and                           # Synonymous
+        any([gen in data_list[5] for gen in condition_list[5]]) and     # Gene component
+        any([dis in data_list[6] for dis in condition_list[6]]) and     # OMIM disease
+        data_list[7] == ""                                              # SNP id
+    ):
 
-            return True
-        else:
-
-            return False
-    except IndexError:
-        pass
-
-        # print(len(data_list), data_list)
-        # return False
+        return True
+    else:
+        return False
 
 
 def file_reader(condition_list):
@@ -202,7 +187,6 @@ def file_reader(condition_list):
             if not counter:
                 header_line = line.rstrip().split("\t")
 
-                # print(header_line)
                 reads_i = header_line.index("reads")
                 phylop_i = header_line.index("phyloP")
                 var_reads_i = header_line.index("variation reads")
@@ -220,7 +204,6 @@ def file_reader(condition_list):
                 try:
                     line = line.rstrip()
                     line_list = line.split("\t")
-                    # line_list = re.split(r"\t+", line)
                     data_list = [line_list[reads_i], line_list[var_reads_i],
                                  line_list[phylop_i], line_list[perc_var_i],
                                  line_list[synonymous_i],
@@ -239,24 +222,13 @@ def file_reader(condition_list):
                     ):
                         print("SNP", data_list)
                         candidates.append(line_list)
-                # except ValueError as error:
-                #     traceback.print_exc()
-                #     print(counter)
-                #     print(line_list)
-                #     print(error)
-                #     # print(data_list)
-                #     print(condition_list)
-                #     #     print(line)
-                #     #     print(counter, line)
-                #     quit()
                 except IndexError:
                     error_count += 1
                     pass
-
             else:
                 break
 
-    print(error_count)
+    print("Index errors:", error_count)
 
     return candidates, header_line
 
