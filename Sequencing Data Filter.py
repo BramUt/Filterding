@@ -19,7 +19,7 @@ def filter_func(condition_list, data_list):
 
     if (int(data_list[0]) >= condition_list[0] and                      # reads
         int(data_list[1]) >= condition_list[1] and                      # variation reads
-        # data_list[2] >= condition_list[2] and                    # PhyloP
+        # data_list[2] >= condition_list[2] and                           # PhyloP
         float(data_list[3]) >= condition_list[3] and                    # Percent variation
         data_list[4] == condition_list[4] and                           # Synonymous
         any([gen in data_list[5] for gen in condition_list[5]]) and     # Gene component
@@ -97,6 +97,12 @@ def file_reader(condition_list):
 
 
 def file_writer(candidates, header_line):
+    """Writes the candidate variations to 'FIlterding.tsv'
+
+    Input:  candidates - list, nested list containing the lines to be written
+            headers_line - list, list containging the contents of the first
+                           line to be written
+    """
 
     print("Aantal regels:", len(candidates))
     while True:
