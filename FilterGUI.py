@@ -1,5 +1,4 @@
 from tkinter import *
-# from tkinter import filedialog
 from tkinter import ttk
 from tkinter.ttk import *
 
@@ -83,6 +82,7 @@ class GUISpinbox:
         self.props.grid(column=column, row=row, sticky=sticky)
 
     def get_value(self):
+        """"Returns the value of the spinbox."""
         return int(self.props.get())
 
 
@@ -93,6 +93,7 @@ class GUICombobox:
         self.props.grid(column=column, row=row, sticky=sticky)
 
     def get_value(self):
+        """Returns the value of the combobox."""
         return self.props.get()
 
 
@@ -102,7 +103,8 @@ class GUIEntry:
         self.props.grid(column=column, row=row, sticky=sticky)
 
     def get_value(self):
-        return self.props.get().split(",")
+        """Splits the content of the entrybox and returns the list."""
+        return self.props.get().split(", ")
 
 
 class GUICheckbox:
@@ -132,7 +134,9 @@ class GUICheckbox:
             row += 1
 
     def get_gen_comp(self):
-
+        """Returns a list of values each checked checkbox in self.default and
+        self.non_default.
+        """
         return [self.default[o].get() for o in (range(len(self.default)))
                 if self.default[o].get()] + \
                [self.non_default[p].get() for p in
