@@ -1,5 +1,5 @@
 from tkinter import filedialog
-from Filterding.FilterGUI import MainGUI
+from FilterGUI import MainGUI
 
 
 def file_opener():
@@ -84,10 +84,10 @@ def file_reader(condition_list):
                         print("SNP", data_list)
                         candidates.append(line_list)
 
-                except IndexError:
-                    print(line_list)
-                    error_count += 1
-                    pass
+                # except IndexError:
+                #     print(line_list)
+                #     error_count += 1
+                #     pass
             else:
                 break
 
