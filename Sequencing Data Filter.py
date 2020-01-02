@@ -85,7 +85,6 @@ def file_reader(condition_list):
                         candidates.append(line_list)
 
                 except IndexError:
-                    print(line_list)
                     error_count += 1
                     pass
             else:
@@ -119,8 +118,6 @@ def file_writer(candidates, header_line):
 def main():
 
     guidata = MainGUI().condition_list
-
-    # guidata = MainGUI().condition_list
 
     print(guidata)
 
