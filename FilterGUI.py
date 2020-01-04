@@ -53,7 +53,7 @@ class MainGUI:
         self.selector_gen_comp = GUICheckbox(self.window, gen_comp_def_var,
                                              gen_comp_dif_var, 0, 13)
 
-        exit_button = Button(self.window, text="Exit",
+        exit_button = Button(self.window, text="Continue",
                              command=lambda: self.window.quit())
         exit_button.grid(column=0, row=20, sticky=E)
 
