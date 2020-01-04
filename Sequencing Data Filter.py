@@ -1,5 +1,5 @@
 from tkinter import filedialog
-from FilterGUI import MainGUI
+from Filterding.FilterGUI import MainGUI
 
 
 def file_opener():
@@ -25,11 +25,25 @@ def filter_func(condition_list, data_list):
         any([gen in data_list[5] for gen in condition_list[5]]) and     # Gene component
         any([dis in data_list[6] for dis in condition_list[6]]) and     # OMIM disease
         data_list[7] == ""                                              # SNP id
-    ):
+        ):
 
         return True
     else:
         return False
+
+
+def header_indexer(header_line):
+    """Returns a dictionary with the index of each condition in the file"""
+    return {"reads_i": header_line.index("reads"),
+            "var_reads_i": header_line.index("variation reads"),
+            "phylop_i": header_line.index("phyloP"),
+            "perc_var_i": header_line.index("% variation"),
+            "snp_i": header_line.index("SNP id"),
+            "synonymous_i": header_line.index("Synonymous"),
+            "gen_comp_i": header_line.index("Gene component"),
+            "omim_dis_i": header_line.index("OMIM_DISEASE"),
+            "caus_pro_i": header_line.index("Causative - Projects")
+            }
 
 
 def file_reader(condition_list):
@@ -45,53 +59,46 @@ def file_reader(condition_list):
 
     with open(file_opener()) as file:
         for counter, line in enumerate(file):
+            line = line.rstrip()
             if not counter:
-                header_line = line.rstrip().split("\t")
-
-                reads_i = header_line.index("reads")
-                phylop_i = header_line.index("phyloP")
-                var_reads_i = header_line.index("variation reads")
-                perc_var_i = header_line.index("% variation")
-                snp_i = header_line.index("SNP id")
-                synonymous_i = header_line.index("Synonymous")
-                gen_comp_i = header_line.index("Gene component")
-                omim_dis_i = header_line.index("OMIM_DISEASE")
-                caus_pro_i = header_line.index("Causative - Projects")
-                index_list = [reads_i, phylop_i, var_reads_i, perc_var_i,
-                              snp_i, synonymous_i, gen_comp_i, omim_dis_i,
-                              caus_pro_i]
-                print(index_list)
+                # Makes a dictionary with the index of each condition in the
+                # file.
+                header_line = line.split("\t")
+                index_dict = header_indexer(header_line)
+                print("Condition indices:", index_dict)
             elif line != "":
                 try:
-                    line = line.rstrip()
                     line_list = line.split("\t")
-                    data_list = [line_list[reads_i], line_list[var_reads_i],
-                                 line_list[phylop_i], line_list[perc_var_i],
-                                 line_list[synonymous_i],
-                                 line_list[gen_comp_i],
-                                 line_list[omim_dis_i],
-                                 line_list[snp_i]]
+                    # List with data for the wanted conditions.
+                    data_list = [line_list[index_dict["reads_i"]],
+                                 line_list[index_dict["var_reads_i"]],
+                                 line_list[index_dict["phylop_i"]],
+                                 line_list[index_dict["perc_var_i"]],
+                                 line_list[index_dict["synonymous_i"]],
+                                 line_list[index_dict["gen_comp_i"]],
+                                 line_list[index_dict["omim_dis_i"]],
+                                 line_list[index_dict["snp_i"]]]
                     if counter == 1:
-                        print(data_list, condition_list)
+                        print("Data first line:", data_list, "\n")
 
-                    elif filter_func(condition_list, data_list):
+                    if filter_func(condition_list, data_list):
                         print("Geen SNP", data_list)
                         candidates.append(line_list)
 
-                    elif ("HGMD" in line_list[caus_pro_i] and
+                    elif ("HGMD" in line_list[index_dict["caus_pro_i"]] and
                           (any([dis in data_list[6] for dis in
                                 condition_list[6]]))):
                         print("SNP", data_list)
                         candidates.append(line_list)
 
-                # except IndexError:
-                #     print(line_list)
-                #     error_count += 1
-                #     pass
+                except IndexError:
+                    error_count += 1
+                    pass
             else:
+                print("we kappen er mee", counter, line)
                 break
 
-    print("Index errors:", error_count)
+    print("\nIndex errors:", error_count)
 
     return candidates, header_line
 
@@ -104,7 +111,7 @@ def file_writer(candidates, header_line):
                            line to be written
     """
 
-    print("Aantal regels:", len(candidates))
+    print("Candidates:", len(candidates))
     while True:
         try:
             with open("Filterding results.tsv", "w") as file:
@@ -118,13 +125,11 @@ def file_writer(candidates, header_line):
 
 def main():
 
-    guidata = MainGUI().condition_list
+    condition_list = MainGUI().condition_list
 
-    # guidata = MainGUI().condition_list
+    print("Conditions", condition_list)
 
-    print(guidata)
-
-    candidates, header_line = file_reader(guidata)
+    candidates, header_line = file_reader(condition_list)
 
     file_writer(candidates, header_line)
 
