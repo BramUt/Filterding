@@ -5,7 +5,6 @@ except ModuleNotFoundError:
     from Filterding.FilterGUI import MainGUI
 
 
-
 def file_opener():
     """Opens a window asking the user to select a file. Returns this path."""
     return filedialog.askopenfilename(title="Select a file.",
