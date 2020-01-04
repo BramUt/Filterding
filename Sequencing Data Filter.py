@@ -32,6 +32,20 @@ def filter_func(condition_list, data_list):
         return False
 
 
+def header_indexer(header_line):
+    """Returns a dictionary with the index of each condition in the file"""
+    return {"reads_i": header_line.index("reads"),
+            "phylop_i": header_line.index("phyloP"),
+            "var_reads_i": header_line.index("variation reads"),
+            "perc_var_i": header_line.index("% variation"),
+            "snp_i": header_line.index("SNP id"),
+            "synonymous_i": header_line.index("Synonymous"),
+            "gen_comp_i": header_line.index("Gene component"),
+            "omim_dis_i": header_line.index("OMIM_DISEASE"),
+            "caus_pro_i": header_line.index("Causative - Projects")
+            }
+
+
 def file_reader(condition_list):
     """Reads a tsv file and returns the candidate genes based on some
     parameters.
@@ -47,30 +61,20 @@ def file_reader(condition_list):
         for counter, line in enumerate(file):
             if not counter:
                 header_line = line.rstrip().split("\t")
-
-                reads_i = header_line.index("reads")
-                phylop_i = header_line.index("phyloP")
-                var_reads_i = header_line.index("variation reads")
-                perc_var_i = header_line.index("% variation")
-                snp_i = header_line.index("SNP id")
-                synonymous_i = header_line.index("Synonymous")
-                gen_comp_i = header_line.index("Gene component")
-                omim_dis_i = header_line.index("OMIM_DISEASE")
-                caus_pro_i = header_line.index("Causative - Projects")
-                index_list = [reads_i, phylop_i, var_reads_i, perc_var_i,
-                              snp_i, synonymous_i, gen_comp_i, omim_dis_i,
-                              caus_pro_i]
-                print(index_list)
+                index_dict = header_indexer(header_line)
+                print(index_dict)
             elif line != "":
                 try:
                     line = line.rstrip()
                     line_list = line.split("\t")
-                    data_list = [line_list[reads_i], line_list[var_reads_i],
-                                 line_list[phylop_i], line_list[perc_var_i],
-                                 line_list[synonymous_i],
-                                 line_list[gen_comp_i],
-                                 line_list[omim_dis_i],
-                                 line_list[snp_i]]
+                    data_list = [line_list[index_dict["reads_i"]],
+                                 line_list[index_dict["var_reads_i"]],
+                                 line_list[index_dict["phylop_i"]],
+                                 line_list[index_dict["perc_var_i"]],
+                                 line_list[index_dict["synonymous_i"]],
+                                 line_list[index_dict["gen_comp_i"]],
+                                 line_list[index_dict["omim_dis_i"]],
+                                 line_list[index_dict["snp_i"]]]
                     if counter == 1:
                         print(data_list, condition_list)
 
@@ -78,7 +82,7 @@ def file_reader(condition_list):
                         print("Geen SNP", data_list)
                         candidates.append(line_list)
 
-                    elif ("HGMD" in line_list[caus_pro_i] and
+                    elif ("HGMD" in line_list[index_dict["caus_pro_i"]] and
                           (any([dis in data_list[6] for dis in
                                 condition_list[6]]))):
                         print("SNP", data_list)
