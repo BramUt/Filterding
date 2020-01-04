@@ -1,5 +1,9 @@
 from tkinter import filedialog
-from Filterding.FilterGUI import MainGUI
+try:
+    from FilterGUI import MainGUI
+except ModuleNotFoundError:
+    from Filterding.FilterGUI import MainGUI
+
 
 
 def file_opener():
