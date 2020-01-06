@@ -13,6 +13,15 @@ def file_opener():
 
 def filter_func(condition_list, data_list):
     """Checks if the data in data_list meets the conditions in condition list.
+    0: reads
+    1: variation reads
+    2: phyloP
+    3: percent variation
+    4: Synonymous
+    5: Gene component
+    6: OMIM disease
+    7: causative prject
+    8: SNP
 
     Input:  condition_list - list, list with conditions.
             data_list - list, list with data.
@@ -20,17 +29,23 @@ def filter_func(condition_list, data_list):
     Output: boolean
     """
 
-    if (int(data_list[0]) >= condition_list[0] and                      # reads
-        int(data_list[1]) >= condition_list[1] and                      # variation reads
-        # data_list[2] >= condition_list[2] and                           # PhyloP
-        float(data_list[3]) >= condition_list[3] and                    # Percent variation
-        data_list[4] == condition_list[4] and                           # Synonymous
-        any([gen in data_list[5] for gen in condition_list[5]]) and     # Gene component
-        any([dis in data_list[6] for dis in condition_list[6]]) and     # OMIM disease
-        data_list[8] == ""                                              # SNP id
-        ):
-
+    if (int(data_list[0]) >= condition_list[0] and
+            int(data_list[1]) >= condition_list[1] and
+            # data_list[2] >= condition_list[2] and
+            float(data_list[3]) >= condition_list[3] and
+            data_list[4] == condition_list[4] and
+            any([gen in data_list[5] for gen in condition_list[5]]) and
+            any([dis in data_list[6] for dis in condition_list[6]]) and
+            data_list[8] == ""):
         return True
+
+    # Adds any candidates containing "HGMD" in causative projects and
+    # "Retinitis" in OMIM Disease.
+    elif condition_list[7]:
+        if ("HGMD" in data_list[7] and
+                (any([dis in data_list[6] for dis in condition_list[6]]))):
+            return True
+
     else:
         return False
 
@@ -86,21 +101,13 @@ def file_reader(condition_list):
                         print("Data first line:", data_list, "\n")
 
                     if filter_func(condition_list, data_list):
-                        print("Geen SNP", data_list)
                         candidates.append(line_list)
-
-                    elif condition_list[7]:
-                        if ("HGMD" in data_list[7] and
-                                (any([dis in data_list[6]
-                                 for dis in condition_list[6]]))):
-                            print("SNP", data_list)
-                            candidates.append(line_list)
 
                 except IndexError:
                     error_count += 1
                     pass
             else:
-                print("we kappen er mee", counter, line)
+                print("Stopping at line:", counter)
                 break
 
     print("\nIndex errors:", error_count)
