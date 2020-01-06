@@ -27,7 +27,7 @@ def filter_func(condition_list, data_list):
         data_list[4] == condition_list[4] and                           # Synonymous
         any([gen in data_list[5] for gen in condition_list[5]]) and     # Gene component
         any([dis in data_list[6] for dis in condition_list[6]]) and     # OMIM disease
-        data_list[7] == ""                                              # SNP id
+        data_list[8] == ""                                              # SNP id
         ):
 
         return True
@@ -80,6 +80,7 @@ def file_reader(condition_list):
                                  line_list[index_dict["synonymous_i"]],
                                  line_list[index_dict["gen_comp_i"]],
                                  line_list[index_dict["omim_dis_i"]],
+                                 line_list[index_dict["caus_pro_i"]],
                                  line_list[index_dict["snp_i"]]]
                     if counter == 1:
                         print("Data first line:", data_list, "\n")
@@ -88,11 +89,12 @@ def file_reader(condition_list):
                         print("Geen SNP", data_list)
                         candidates.append(line_list)
 
-                    elif ("HGMD" in line_list[index_dict["caus_pro_i"]] and
-                          (any([dis in data_list[6] for dis in
-                                condition_list[6]]))):
-                        print("SNP", data_list)
-                        candidates.append(line_list)
+                    elif condition_list[7]:
+                        if ("HGMD" in data_list[7] and
+                                (any([dis in data_list[6]
+                                 for dis in condition_list[6]]))):
+                            print("SNP", data_list)
+                            candidates.append(line_list)
 
                 except IndexError:
                     error_count += 1

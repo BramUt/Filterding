@@ -18,10 +18,11 @@ class MainGUI:
         var_reads.set(5)
         perc_var.set(20)
 
-        syn_var, omim_var, cause_var = StringVar(), StringVar(), StringVar()
+        syn_var, omim_var = StringVar(), StringVar()
+        self.__cause_var = BooleanVar()
         syn_var.set("FALSE")
         omim_var.set("Retinitis")
-        cause_var.set("HGMD")
+        self.__cause_var.set(True)
         gen_comp_def_var = ["EXON_REGION", "SA_SITE"]
         gen_comp_dif_var = ["(empty)", "INTRON_REGION", "microRNA",
                             "SA_SITE_CANONICAL", "UTR"]
@@ -47,7 +48,9 @@ class MainGUI:
         self.selector_omim = GUIEntry(self.window, omim_var, 0, 9)
 
         self.label_cause = GUILabel(self.window, "Causative projects", 0, 10)
-        self.selector_cause = GUIEntry(self.window, cause_var, 0, 11)
+        self.selector_cause = Checkbutton(self.window, text="HGMD",
+                                          variable=self.__cause_var)
+        self.selector_cause.grid(column=0, row=11, sticky=W)
 
         self.label_gen_comp = GUILabel(self.window, "Gene component", 0, 12)
         self.selector_gen_comp = GUICheckbox(self.window, gen_comp_def_var,
@@ -64,7 +67,8 @@ class MainGUI:
                                2.5, self.selector_perc_var.get_value(),
                                self. selector_syn.get_value(),
                                self.selector_gen_comp.get_gen_comp(),
-                               self.selector_omim.get_value()]
+                               self.selector_omim.get_value(),
+                               self.__cause_var.get()]
 
 
 class GUILabel:
